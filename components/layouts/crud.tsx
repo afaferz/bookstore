@@ -1,0 +1,10 @@
+import type { ReactElement } from 'react';
+
+export default function Layout({ children }: { children: ReactElement }) {
+    return (
+        <>
+            <h1>AAAAAAAAAaa</h1>
+            <main>{children}</main>
+        </>
+    );
+}
