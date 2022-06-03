@@ -22,10 +22,9 @@ export const addAsync = createAsyncThunk(
     'author/addAuthor',
     async (authorObj: IAuthor) => {
         try {
-            const response = await addAuthor(authorObj)
-            console.log(response)
+            await addAuthor(authorObj)
         } catch (error) {
-
+            console.log(error)
         }
     }
 )
@@ -54,24 +53,15 @@ export const deleteAsync = createAsyncThunk(
 export const listAsync = createAsyncThunk(
     'author/listAuthor',
     async () => {
-        try {
-            const response = await listAuthor()
-            console.log(response)
-        } catch (error) {
-
-        }
+        const response = await listAuthor()
+        return response.data
     }
 )
 export const detailAsync = createAsyncThunk(
     'author/detailAuthor',
     async (authorId: number) => {
-        if(!authorId) return
-        try {
-            const response = await detailAuthor(authorId)
-            console.log(response)
-        } catch (error) {
-
-        }
+        const response = await detailAuthor(authorId)
+        return response.data
     }
 )
 
@@ -87,22 +77,45 @@ export const author = createSlice({
             state.authorsList = action.payload
         }
     },
-    // extraReducers: (builder) => {
-    //     builder
-    //         .addCase(addAsync.pending, (state) => {
-    //             state.status = 'loading';
-    //         })
-    //         .addCase(addAsync.fulfilled, (state) => {
-    //             state.status = 'idle';
-    //         })
-    //         .addCase(addAsync.rejected, (state) => {
-    //             state.status = 'failed';
-    //         });
-    // },
+    extraReducers: (builder) => {
+        builder
+            .addCase(addAsync.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(addAsync.fulfilled, (state) => {
+                state.status = 'idle';
+            })
+            .addCase(addAsync.rejected, (state) => {
+                state.status = 'failed';
+            });
+        builder
+            .addCase(listAsync.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(listAsync.fulfilled, (state, action) => {
+                state.status = 'idle';
+                state.authorsList = action.payload
+            })
+            .addCase(listAsync.rejected, (state) => {
+                state.status = 'failed';
+            });
+        builder
+            .addCase(detailAsync.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(detailAsync.fulfilled, (state, action) => {
+                state.status = 'idle';
+                state.author = action.payload
+            })
+            .addCase(detailAsync.rejected, (state) => {
+                state.status = 'failed';
+            });
+    },
 });
 
 export const { changeAuthor, changeAuthorList } = author.actions;
 
+export const selectAuthor = (state: RootState) => state.author.author
 export const selectAuthorName = (state: RootState) => state.author.author.name;
 export const selectAuthorList = (state: RootState) => state.author.authorsList;
 
